@@ -1,24 +1,37 @@
 import { useState } from 'react';
+import { nanoid } from 'nanoid';
+import { useSelector, useDispatch } from 'react-redux';
+import { addItem, filterValue, getItem } from '../redux/slice';
 
-export const ContactForm = ({ handleSubmit }) => {
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+const STATE = {
+  name: '',
+  number: '',
+};
+export const ContactForm = () => {
+  const [{ name, number }, setState] = useState(STATE);
+  const dispatch = useDispatch();
+  const items = useSelector(getItem);
 
-  const NameChange = event => {
-    const { value } = event.currentTarget;
-    setName(value);
-  };
-
-  const NumberChange = event => {
-    const { value } = event.currentTarget;
-    setNumber(value);
+  const onChange = event => {
+    const { name, value } = event.target;
+    setState(prevState => ({ ...prevState, [name]: value }));
   };
 
   const formSubmit = event => {
     event.preventDefault();
-    const form = event.currentTarget;
-    handleSubmit({ name, number });
-    form.reset();
+    const newContact = {
+      id: nanoid(),
+      name,
+      number,
+    };
+    if (items.some(x => x.name === newContact.name)) {
+      alert(`${newContact.name} вже у списку`);
+      return;
+    }
+    dispatch(addItem(newContact));
+    dispatch(filterValue(''));
+
+    setState({ ...STATE });
   };
 
   return (
@@ -32,7 +45,7 @@ export const ContactForm = ({ handleSubmit }) => {
         required
         placeholder="Enter name"
         value={name}
-        onChange={NameChange}
+        onChange={onChange}
       />
       <label>Number </label>
       <input
@@ -43,7 +56,7 @@ export const ContactForm = ({ handleSubmit }) => {
         required
         placeholder="Enter phone number"
         value={number}
-        onChange={NumberChange}
+        onChange={onChange}
       />
       <button type="submit">Add contact</button>
     </form>
