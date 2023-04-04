@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { nanoid } from 'nanoid';
 import { useSelector, useDispatch } from 'react-redux';
-import { addItem, filterValue, getItem } from '../redux/slice';
+import { addItem, filterValue, getItem } from '../../redux/slice';
 
 const STATE = {
   name: '',
